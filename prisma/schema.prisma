@@ -1,0 +1,87 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String    @id @unique
+  email    String
+  password String
+  role     Role      @default(PATIENT)
+  patient  Patient[]
+  doctor   Doctor[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("user")
+}
+
+model Patient {
+  id           String         @id @unique
+  CPF          String         @unique
+  birth_date   String         @unique
+  user         User?          @relation(fields: [userId], references: [id])
+  userId       String?        @unique
+  consultation Consultation[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("patient")
+}
+
+model Speciality {
+  id      String   @id @unique
+  name    String   @unique
+  doctors Doctor[] @relation("DoctorSpecialitys")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("speciality")
+}
+
+model Doctor {
+  id           String         @id @unique
+  name         String
+  CRM          Int            @unique
+  userId       String?        @unique
+  specialitys  Speciality[]   @relation("DoctorSpecialitys")
+  Consultation Consultation[]
+
+  user User? @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("doctor")
+}
+
+model Consultation {
+  id        String     @id @unique
+  date      DateTime[]
+  office    Int
+  doctor    Doctor?    @relation(fields: [doctorId], references: [id])
+  doctorId  String?
+  patient   Patient?   @relation(fields: [patientId], references: [id])
+  patientId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("consultation")
+}
+
+enum Role {
+  PATIENT
+  ADMIN
+  DOCTOR
+}
