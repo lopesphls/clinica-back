@@ -2,8 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { Role } from '@prisma/client';
 import { randomUUID } from 'crypto';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { IUserEntities } from './entities/user.entities';
-import { UserRepository } from './user.repositiry';
+import { UserRepository } from './user.repository';
 
 @Injectable()
 export class UserService {
@@ -11,7 +12,15 @@ export class UserService {
 
   public async allUsers() {
     try {
-      return await this.userRepository.getAll();
+      return await this.userRepository.getData();
+    } catch (error) {
+      return error;
+    }
+  }
+
+  public async userId(id: IUserEntities) {
+    try {
+      return await this.userRepository.getDataById(id);
     } catch (error) {
       return error;
     }
@@ -25,7 +34,7 @@ export class UserService {
         password,
         role: Role.PATIENT,
       };
-      return await this.userRepository.createInData(user);
+      return await this.userRepository.createInDb(user);
     } catch (error) {
       return error;
     }
@@ -39,7 +48,23 @@ export class UserService {
         password,
         role: Role.DOCTOR,
       };
-      return await this.userRepository.createInData(user);
+      return await this.userRepository.createInDb(user);
+    } catch (error) {
+      return error;
+    }
+  }
+
+  public async updatedUser({ id, email, password, role }: UpdateUserDto) {
+    try {
+      return await this.userRepository.editUser({ id, email, password, role });
+    } catch (error) {
+      return error;
+    }
+  }
+
+  public async deletedUser(id: IUserEntities) {
+    try {
+      return await this.userRepository.deleteUserData(id);
     } catch (error) {
       return error;
     }

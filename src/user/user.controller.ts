@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Res } from '@nestjs/common';
-import { Post } from '@nestjs/common/decorators';
+import { Body, Controller, Delete, Get, Param, Post, Put, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { IUserEntities } from './entities/user.entities';
 import { UserService } from './user.service';
 
 @ApiTags('User')
@@ -14,6 +15,16 @@ export class UserController {
   public async allUsers(@Res() res: Response) {
     try {
       const users = await this.userService.allUsers();
+      return res.status(200).json(users);
+    } catch (error) {
+      return res.json(error);
+    }
+  }
+
+  @Get(':id')
+  public async User(@Param() id: IUserEntities, @Res() res: Response) {
+    try {
+      const users = await this.userService.userId(id);
       return res.status(200).json(users);
     } catch (error) {
       return res.json(error);
@@ -35,6 +46,26 @@ export class UserController {
       return await this.userService.createdDoctor(user);
     } catch (error) {
       return res.status(400).json(error);
+    }
+  }
+
+  @Put('edit/:id')
+  public async updateUser(@Param() { id }: UpdateUserDto, @Body() { email, password, role }: UpdateUserDto) {
+    try {
+      const user = await this.userService.updatedUser({ id, email, password, role });
+      return user;
+    } catch (error) {
+      return error;
+    }
+  }
+
+  @Delete('delete/:id')
+  public async deleteUser(@Param() id: IUserEntities) {
+    try {
+      const user = await this.userService.deletedUser(id);
+      return user;
+    } catch (error) {
+      return error;
     }
   }
 }
