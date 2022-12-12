@@ -8,7 +8,7 @@ export class SpecialityRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
   public async getAll() {
-    return await this.prisma.speciality.findMany();
+    return await this.prisma.speciality.findMany({});
   }
 
   public async createSpeciality(medicalSpecialty: ISpeciality) {

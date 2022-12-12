@@ -11,12 +11,13 @@ datasource db {
 }
 
 model User {
-  id       String    @id @unique
-  email    String
-  password String
-  role     Role      @default(PATIENT)
-  patient  Patient[]
-  doctor   Doctor[]
+  id           String         @id @unique
+  email        String         @unique
+  password     String
+  role         Role
+  patient      Patient[]      @relation("logInPatient")
+  doctor       Doctor[]       @relation("logInDoctor")
+  consultation Consultation[] @relation("ConsultationToUser")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -25,16 +26,28 @@ model User {
 }
 
 model Patient {
-  id           String         @id @unique
-  CPF          String         @unique
-  user         User?          @relation(fields: [userId], references: [id])
-  userId       String?        @unique
-  consultation Consultation[]
+  id   String @id @unique
+  name String
+  CPF  String @unique
+  user User[] @relation("logInPatient")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@map("patient")
+}
+
+model Doctor {
+  id          String       @id @unique
+  name        String
+  CRM         Int          @unique
+  specialitys Speciality[] @relation("DoctorSpecialitys")
+  user        User[]       @relation("logInDoctor")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("doctor")
 }
 
 model Speciality {
@@ -48,30 +61,15 @@ model Speciality {
   @@map("speciality")
 }
 
-model Doctor {
-  id           String         @id @unique
-  name         String
-  CRM          Int            @unique
-  userId       String?        @unique
-  specialitys  Speciality[]   @relation("DoctorSpecialitys")
-  Consultation Consultation[]
-
-  user User? @relation(fields: [userId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("doctor")
-}
-
 model Consultation {
-  id        String     @id @unique
-  date      DateTime[]
-  office    Int
-  doctor    Doctor?    @relation(fields: [doctorId], references: [id])
-  doctorId  String?
-  patient   Patient?   @relation(fields: [patientId], references: [id])
-  patientId String?
+  id      String @id @unique
+  date    Int
+  month   Int
+  year    Int
+  hours   Int[]
+  minutes Int[]
+  office  Int?
+  user    User[] @relation("ConsultationToUser")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

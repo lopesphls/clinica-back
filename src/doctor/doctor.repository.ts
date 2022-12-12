@@ -9,7 +9,22 @@ export class DoctorRepository {
 
   public async getAll() {
     return await this.prisma.doctor.findMany({
-      include: { specialitys: true, Consultation: true, user: true },
+      select: {
+        id: true,
+        CRM: true,
+        name: true,
+        user: {
+          select: {
+            id: true,
+          },
+        },
+        specialitys: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
     });
   }
 
@@ -17,8 +32,21 @@ export class DoctorRepository {
     try {
       return await this.prisma.doctor.findUniqueOrThrow({
         where: { id },
-        include: {
-          specialitys: true,
+        select: {
+          id: true,
+          CRM: true,
+          name: true,
+          user: {
+            select: {
+              id: true,
+            },
+          },
+          specialitys: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
         },
       });
     } catch (error) {
@@ -26,24 +54,12 @@ export class DoctorRepository {
     }
   }
 
-  public async createDoctor({ specialitys, id, name, CRM, userId }: IDoctorEntities) {
-    return await this.prisma.doctor.create({
-      data: {
-        id,
-        name,
-        CRM,
-        userId,
-        specialitys: {
-          connectOrCreate: {
-            where: { name: specialitys.name },
-            create: { id: specialitys.id, name: specialitys.name },
-          },
-        },
-      },
-    });
-  }
-
-  public async updateDoctor({ id, name, specialitys, deleted }: UpdateDoctorDto) {
+  public async updateDoctor({
+    id,
+    name,
+    specialitys,
+    deleted,
+  }: UpdateDoctorDto) {
     try {
       await this.prisma.doctor.update({
         where: { id },
@@ -59,7 +75,6 @@ export class DoctorRepository {
         },
         include: {
           specialitys: true,
-          Consultation: true,
           user: true,
         },
       });

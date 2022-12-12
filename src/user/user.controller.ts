@@ -1,4 +1,13 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Res,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -32,27 +41,44 @@ export class UserController {
   }
 
   @Post('create/patient')
-  public async createPatient(@Body() user: CreateUserDto, @Res() res: Response) {
+  public async createPatient(
+    @Body() user: CreateUserDto,
+    @Res() res: Response,
+  ) {
     try {
-      return await this.userService.createdPatient(user);
+      const patient = await this.userService.createdPatient(user);
+
+      return res.status(201).json(patient);
     } catch (error) {
       return res.status(400).json(error);
     }
   }
 
   @Post('create/doctor')
-  public async createDoctor(@Body() user: CreateUserDto, @Res() res: Response) {
+  public async createDoctor(
+    @Body() doctor: CreateUserDto,
+    @Res() res: Response,
+  ) {
     try {
-      return await this.userService.createdDoctor(user);
+      const createDoctor = await this.userService.createdDoctor(doctor);
+
+      return res.status(201).json(createDoctor);
     } catch (error) {
       return res.status(400).json(error);
     }
   }
 
   @Put('edit/:id')
-  public async updateUser(@Param() { id }: UpdateUserDto, @Body() { email, password, role }: UpdateUserDto) {
+  public async updateUser(
+    @Param() { id }: UpdateUserDto,
+    @Body() { email, password }: UpdateUserDto,
+  ) {
     try {
-      const user = await this.userService.updatedUser({ id, email, password, role });
+      const user = await this.userService.updatedUser({
+        id,
+        email,
+        password,
+      });
       return user;
     } catch (error) {
       return error;

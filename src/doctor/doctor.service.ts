@@ -17,27 +17,26 @@ export class DoctorService {
     return await this.doctorRepository.getById(id);
   }
 
-  // eslint-disable-next-line no-dupe-args
-  public async createDoctor({ name, userId, specialitys }: CreateDoctorDto): Promise<IDoctorEntities> {
-    let speciality;
-    if (specialitys.name === '') {
-      speciality = { id: `s-${randomInt(100, 1000)}`, name: 'Clinico geral' };
-    } else {
-      speciality = { id: `s-${randomInt(100, 1000)}`, name: specialitys.name };
-    }
-
+  public async createDoctor({
+    name,
+    specialitys,
+  }: CreateDoctorDto): Promise<IDoctorEntities> {
     const doctor: IDoctorEntities = {
       id: `d-${randomInt(100, 1000)}`,
       CRM: randomInt(1000000, 10000000),
       name,
-      userId,
-      specialitys: speciality,
+      specialitys: { id: specialitys.id, name: specialitys.name },
     };
 
-    return await this.doctorRepository.createDoctor(doctor);
+    return doctor;
   }
 
-  public async updatedDoctor({ id, specialitys, name, deleted }: UpdateDoctorDto) {
+  public async updatedDoctor({
+    id,
+    specialitys,
+    name,
+    deleted,
+  }: UpdateDoctorDto) {
     try {
       let speciality;
       const doc = await this.doctorId(id);
@@ -45,7 +44,10 @@ export class DoctorService {
       if (specialitys.name === '' && doc.specialitys.length === 0) {
         speciality = { id: `s-${randomInt(100, 1000)}`, name: 'Clinico geral' };
       } else {
-        speciality = { id: `s-${randomInt(100, 1000)}`, name: specialitys.name };
+        speciality = {
+          id: `s-${randomInt(100, 1000)}`,
+          name: specialitys.name,
+        };
       }
 
       const doctor = {

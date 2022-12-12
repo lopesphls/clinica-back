@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Req, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Req,
+  Res,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { UpdateDoctorDto } from 'src/doctor/dto/update-doctor.dto';
@@ -22,7 +32,10 @@ export class SpecialityController {
   }
 
   @Post('/create')
-  public async createSpeciality(@Body() name: CreateSpecialityDto, @Res() res: Response) {
+  public async createSpeciality(
+    @Body() name: CreateSpecialityDto,
+    @Res() res: Response,
+  ) {
     try {
       await this.specialityService.createSpeciality(name);
       return res.status(201).json('ok');
@@ -38,7 +51,10 @@ export class SpecialityController {
     @Res() res: Response,
   ) {
     try {
-      const doctor = await this.specialityService.updatedSpeciality({ id, name });
+      const doctor = await this.specialityService.updatedSpeciality({
+        id,
+        name,
+      });
       return res.status(200).json(doctor);
     } catch (error) {
       return res.json(error);
@@ -46,7 +62,10 @@ export class SpecialityController {
   }
 
   @Delete('/delete')
-  public async deleteOneOrMore(@Body() name: DeleteSpecialityDto, @Res() res: Response) {
+  public async deleteOneOrMore(
+    @Body() name: DeleteSpecialityDto,
+    @Res() res: Response,
+  ) {
     try {
       const result = await this.specialityService.deleteSpeciality(name);
 

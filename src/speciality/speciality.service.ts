@@ -19,7 +19,10 @@ export class SpecialityService {
 
   public async createSpeciality({ name }: CreateSpecialityDto) {
     try {
-      const medicalSpecialty: ISpeciality = { id: `s-${randomInt(100, 1000)}`, name };
+      const medicalSpecialty: ISpeciality = {
+        id: `s-${randomInt(100, 1000)}`,
+        name,
+      };
       return await this.specialityRepository.createSpeciality(medicalSpecialty);
     } catch (error) {
       return error;

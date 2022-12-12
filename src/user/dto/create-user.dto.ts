@@ -1,16 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsEmpty, IsString, Length } from 'class-validator';
+import { IDoctorEntities } from 'src/doctor/entities/doctor.entities';
+import { IPatientEntities } from 'src/patient/entities/patient.entities';
 
 export class CreateUserDto {
   @ApiProperty()
-  @IsString()
-  @IsEmail()
-  @IsEmpty()
   email: string;
 
   @ApiProperty()
-  @IsString()
-  @Length(6)
-  @IsEmpty()
   password: string;
+
+  @ApiProperty()
+  doctor?: IDoctorEntities;
+
+  @ApiProperty()
+  patient?: IPatientEntities;
 }
